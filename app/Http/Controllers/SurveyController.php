@@ -1,26 +1,39 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Survey; // Import the Survey model
 
 use Illuminate\Http\Request;
 
 class SurveyController extends Controller
-{
-    public function store(Request $request)
+{    public function store(Request $request)
     {
-        // // Validate the incoming request data
-        // $request->validate([
-        //     'name' => 'required|string|max:255',
-        // ]);
+        // Validate the incoming request data
+        $request->validate([
+            'survey_name' => 'required|string|max:255', // Validate the survey name
+            'questions.*' => 'required|string|max:255', // Validate each question
+            'question_type.*' => 'required|string|in:text,rating,dropdown,checkbox', // Validate question types
+            'options.*' => 'nullable|string', // Validate options, if provided
+        ]);
 
-        // // Get the name from the request
-        // $name = $request->input('name');
+        // Create a new survey entry in the database
+        $survey = Survey::create([
+            'survey_name' => $request->input('survey_name'),
+            'questions' => json_encode($request->input('questions')),
+            'question_type' => json_encode($request->input('question_type')),
+            'options' => json_encode($request->input('options')),
+        ]);
 
-        // // Echo the name
-        // echo "Submitted Name: " . htmlspecialchars($name);
-        $inputData = $request->all();
+        // Display a success message or redirect as needed
+        return redirect()->back()->with('success', 'Survey created successfully!');
+    }
 
-        // Print all input data
-        echo "<h3 class='text-xl font-bold'>Submitted Data:</h3><pre class='bg-gray-100 p-4 rounded'>" . htmlspecialchars(print_r($inputData, true)) . "</pre>";
+    public function dashboard()
+    {
+        // Retrieve all surveys from the database
+        $surveys = Survey::all(); // Get all survey records
+
+        // Pass the surveys to the view
+        return view('user.dashboard', compact('surveys'));
     }
 }
