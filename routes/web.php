@@ -17,6 +17,7 @@ Route::post('/survey/{id}/submit', [SurveyController::class, 'submitAnswers'])->
 Route::get('/user/dashboard', [SurveyController::class, 'dashboard'])->name('user.dashboard');
 
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+Route::get('/business/analytics', [SurveyController::class, 'analytics'])->name('business.analytics');
 
 
 // Route for the dashboard to display all surveys
