@@ -36,4 +36,39 @@ class SurveyController extends Controller
         // Pass the surveys to the view
         return view('user.dashboard', compact('surveys'));
     }
+    public function submitAnswers(Request $request, $id)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'responses.' . $id . '.*' => 'required|string', // Ensure all responses are filled out
+        ]);
+
+        // Get the responses
+        $responses = $request->input('responses')[$id];
+
+        // Instead of saving, echo the responses
+        $responseString = "Responses for Survey ID {$id}:<br>";
+        
+        foreach ($responses as $questionIndex => $response) {
+            $responseString .= "Question {$questionIndex}: {$response}<br>";
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $responseString,
+        ]);
+    }
+
+    public function show($id)
+    {
+        // Retrieve the survey by ID, or fail if not found
+        $survey = Survey::findOrFail($id);
+
+        // Pass the survey data to the view
+        return view('user.survey_detail', [
+            'survey' => $survey,
+        ]);
+    }
+
 }
+
